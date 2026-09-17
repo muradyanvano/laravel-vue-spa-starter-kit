@@ -1,9 +1,10 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { defineComponent, h, nextTick } from 'vue';
-import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
+import { defineComponent, nextTick } from 'vue';
+import { RouterView } from 'vue-router';
 import AuthProvider from '@/auth/AuthProvider.vue';
 import LoginPage from '@/pages/auth/LoginPage.vue';
+import { createSpaTestRouter } from '@/testing/create-test-router';
 
 vi.mock('@/lib/auth-api', () => ({
     fetchCurrentUser: vi.fn(),
@@ -25,40 +26,29 @@ const mockedLogin = vi.mocked(login);
 async function mountLogin() {
     mockedFetchCurrentUser.mockResolvedValue(null);
 
-    const router = createRouter({
-        history: createMemoryHistory(),
-        routes: [
+    const router = createSpaTestRouter({
+        children: [
             {
-                path: '/',
+                path: 'login',
+                component: LoginPage,
+            },
+            {
+                path: 'dashboard',
                 component: defineComponent({
-                    setup() {
-                        return () => h(RouterView);
-                    },
+                    template: '<div>Dashboard ready</div>',
                 }),
-                children: [
-                    {
-                        path: 'login',
-                        component: LoginPage,
-                    },
-                    {
-                        path: 'dashboard',
-                        component: defineComponent({
-                            template: '<div>Dashboard ready</div>',
-                        }),
-                    },
-                    {
-                        path: 'two-factor-challenge',
-                        component: defineComponent({
-                            template: '<div>Two factor ready</div>',
-                        }),
-                    },
-                    {
-                        path: 'verify-email',
-                        component: defineComponent({
-                            template: '<div>Verify email ready</div>',
-                        }),
-                    },
-                ],
+            },
+            {
+                path: 'two-factor-challenge',
+                component: defineComponent({
+                    template: '<div>Two factor ready</div>',
+                }),
+            },
+            {
+                path: 'verify-email',
+                component: defineComponent({
+                    template: '<div>Verify email ready</div>',
+                }),
             },
         ],
     });

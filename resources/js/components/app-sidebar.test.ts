@@ -1,20 +1,16 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { describe, expect, it } from 'vitest';
 import { defineComponent } from 'vue';
-import { createMemoryHistory, createRouter } from 'vue-router';
 import AppSidebar from '@/components/AppSidebar.vue';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { createSpaTestRouter } from '@/testing/create-test-router';
 
 const repositoryHref =
     'https://github.com/muradyanvano/laravel-vue-spa-starter-kit';
 
 async function mountSidebar() {
-    const router = createRouter({
-        history: createMemoryHistory(),
-        routes: [
-            { path: '/', component: { template: '<div />' } },
-            { path: '/dashboard', component: { template: '<div />' } },
-        ],
+    const router = createSpaTestRouter({
+        children: [],
     });
 
     await router.push('/dashboard');

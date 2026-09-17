@@ -1,13 +1,17 @@
 # Laravel Vue SPA Starter Kit
 
-A community Laravel starter kit for a first-party Vue SPA using Vue Router instead of Inertia.js.
-
 [![CI](https://img.shields.io/github/actions/workflow/status/muradyanvano/laravel-vue-spa-starter-kit/tests.yml?branch=main&label=CI)](https://github.com/muradyanvano/laravel-vue-spa-starter-kit/actions/workflows/tests.yml)
 [![Packagist Version](https://img.shields.io/packagist/v/muradyanvano/laravel-vue-spa-starter-kit)](https://packagist.org/packages/muradyanvano/laravel-vue-spa-starter-kit)
 [![Packagist Downloads](https://img.shields.io/packagist/dt/muradyanvano/laravel-vue-spa-starter-kit)](https://packagist.org/packages/muradyanvano/laravel-vue-spa-starter-kit)
 [![PHP Version](https://img.shields.io/badge/PHP-8.3%2B-777BB4?logo=php&logoColor=white)](https://www.php.net)
 [![Laravel](https://img.shields.io/badge/Laravel-13.x-FF2D20?logo=laravel&logoColor=white)](https://laravel.com)
 [![License](https://img.shields.io/github/license/muradyanvano/laravel-vue-spa-starter-kit)](LICENSE)
+
+<p align="center">
+    <img src=".github/assets/social-preview.png" alt="Laravel Vue SPA Starter Kit" width="100%">
+</p>
+
+A community Laravel starter kit for a first-party Vue SPA using Vue Router instead of Inertia.js.
 
 This is **not** an official Laravel starter kit and is not endorsed by Laravel.
 

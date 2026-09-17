@@ -1,10 +1,11 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h } from 'vue';
-import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
+import { RouterView } from 'vue-router';
 import AuthProvider from '@/auth/AuthProvider.vue';
 import { useAuth } from '@/auth/use-auth';
 import WelcomePage from '@/pages/WelcomePage.vue';
+import { createSpaTestRouter } from '@/testing/create-test-router';
 import type { User } from '@/types';
 
 vi.mock('@/lib/auth-api', () => ({
@@ -41,36 +42,30 @@ const AuthReadyShell = defineComponent({
 async function mountWelcome(user: User | null = null) {
     mockedFetchCurrentUser.mockResolvedValue(user);
 
-    const router = createRouter({
-        history: createMemoryHistory(),
-        routes: [
+    const router = createSpaTestRouter({
+        shell: AuthReadyShell,
+        children: [
             {
-                path: '/',
-                component: AuthReadyShell,
-                children: [
-                    {
-                        path: '',
-                        component: WelcomePage,
-                    },
-                    {
-                        path: 'login',
-                        component: defineComponent({
-                            template: '<div>Login ready</div>',
-                        }),
-                    },
-                    {
-                        path: 'register',
-                        component: defineComponent({
-                            template: '<div>Register ready</div>',
-                        }),
-                    },
-                    {
-                        path: 'dashboard',
-                        component: defineComponent({
-                            template: '<div>Dashboard ready</div>',
-                        }),
-                    },
-                ],
+                path: '',
+                component: WelcomePage,
+            },
+            {
+                path: 'login',
+                component: defineComponent({
+                    template: '<div>Login ready</div>',
+                }),
+            },
+            {
+                path: 'register',
+                component: defineComponent({
+                    template: '<div>Register ready</div>',
+                }),
+            },
+            {
+                path: 'dashboard',
+                component: defineComponent({
+                    template: '<div>Dashboard ready</div>',
+                }),
             },
         ],
     });

@@ -1,10 +1,11 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h } from 'vue';
-import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
+import { RouterView } from 'vue-router';
 import AuthProvider from '@/auth/AuthProvider.vue';
 import { useAuth } from '@/auth/use-auth';
 import DashboardPage from '@/pages/DashboardPage.vue';
+import { createSpaTestRouter } from '@/testing/create-test-router';
 import type { User } from '@/types';
 
 vi.mock('@/lib/auth-api', () => ({
@@ -57,18 +58,12 @@ const AuthReadyShell = defineComponent({
 async function mountDashboard() {
     mockedFetchCurrentUser.mockResolvedValue(verifiedUser);
 
-    const router = createRouter({
-        history: createMemoryHistory(),
-        routes: [
+    const router = createSpaTestRouter({
+        shell: AuthReadyShell,
+        children: [
             {
-                path: '/',
-                component: AuthReadyShell,
-                children: [
-                    {
-                        path: 'dashboard',
-                        component: DashboardPage,
-                    },
-                ],
+                path: 'dashboard',
+                component: DashboardPage,
             },
         ],
     });
