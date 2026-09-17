@@ -23,10 +23,12 @@ vi.mock('@/lib/auth-api', () => ({
 vi.mock('@/lib/settings-api', () => ({
     fetchPasswordConfirmationStatus: vi.fn(),
     fetchSecuritySettings: vi.fn(),
+    fetchPasskeys: vi.fn(),
     fetchRecoveryCodes: vi.fn(),
     updatePassword: vi.fn(),
     updateProfile: vi.fn(),
     deleteAccount: vi.fn(),
+    deletePasskey: vi.fn(),
     enableTwoFactor: vi.fn(),
     disableTwoFactor: vi.fn(),
     confirmTwoFactor: vi.fn(),
@@ -37,6 +39,7 @@ vi.mock('@/lib/settings-api', () => ({
 
 import { fetchCurrentUser } from '@/lib/auth-api';
 import {
+    fetchPasskeys,
     fetchPasswordConfirmationStatus,
     fetchRecoveryCodes,
     fetchSecuritySettings,
@@ -47,6 +50,7 @@ const mockedFetchPasswordConfirmationStatus = vi.mocked(
     fetchPasswordConfirmationStatus,
 );
 const mockedFetchSecuritySettings = vi.mocked(fetchSecuritySettings);
+const mockedFetchPasskeys = vi.mocked(fetchPasskeys);
 const mockedFetchRecoveryCodes = vi.mocked(fetchRecoveryCodes);
 
 const verifiedUser: User = {
@@ -58,6 +62,7 @@ const verifiedUser: User = {
 
 const securitySettings = {
     canManageTwoFactor: true,
+    canManagePasskeys: true,
     twoFactorEnabled: false,
     requiresConfirmation: true,
     passwordRules: 'minlength: 8;',
@@ -118,7 +123,9 @@ describe('SecuritySettingsPage', () => {
         mockedFetchCurrentUser.mockReset();
         mockedFetchPasswordConfirmationStatus.mockReset();
         mockedFetchSecuritySettings.mockReset();
+        mockedFetchPasskeys.mockReset();
         mockedFetchRecoveryCodes.mockReset();
+        mockedFetchPasskeys.mockResolvedValue([]);
     });
 
     it('shows security-skeleton before password controls', async () => {
@@ -178,9 +185,50 @@ describe('SecuritySettingsPage', () => {
 
         expect(mockedFetchPasswordConfirmationStatus).toHaveBeenCalledTimes(1);
         expect(mockedFetchSecuritySettings).toHaveBeenCalledTimes(1);
+        expect(mockedFetchPasskeys).toHaveBeenCalledTimes(1);
         expect(mockedFetchRecoveryCodes).not.toHaveBeenCalled();
+        expect(mockedFetchCurrentUser).toHaveBeenCalledTimes(1);
         expect(wrapper.find('#current_password').exists()).toBe(true);
         expect(wrapper.text()).toContain('Update password');
+        expect(wrapper.text()).toContain('Passkeys');
+    });
+
+    it('does not fetch passkeys before capability is known', async () => {
+        let resolveStatus: (value: { confirmed: boolean }) => void = () =>
+            undefined;
+
+        mockedFetchPasswordConfirmationStatus.mockImplementation(
+            () =>
+                new Promise((resolve) => {
+                    resolveStatus = resolve;
+                }),
+        );
+        mockedFetchSecuritySettings.mockResolvedValue(securitySettings);
+
+        await mountSecurity();
+
+        expect(mockedFetchPasskeys).not.toHaveBeenCalled();
+
+        resolveStatus({ confirmed: true });
+        await flushPromises();
+        await nextTick();
+
+        expect(mockedFetchPasskeys).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not fetch passkeys when capability is false', async () => {
+        mockedFetchPasswordConfirmationStatus.mockResolvedValue({
+            confirmed: true,
+        });
+        mockedFetchSecuritySettings.mockResolvedValue({
+            ...securitySettings,
+            canManagePasskeys: false,
+        });
+
+        const { wrapper } = await mountSecurity();
+
+        expect(mockedFetchPasskeys).not.toHaveBeenCalled();
+        expect(wrapper.text()).not.toContain('Passkeys');
     });
 
     it('when twoFactorEnabled shows Disable 2FA and View recovery codes without fetching codes', async () => {

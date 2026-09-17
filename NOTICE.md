@@ -4,7 +4,7 @@ This project adapts MIT-licensed UI components, layouts, and patterns from:
 
 - Laravel Vue Starter Kit
   https://github.com/laravel/vue-starter-kit
-  Commit reference used for authentication and app-shell/settings phases:
+  Commit reference used for authentication, app shell, settings, and passkey UI:
   `4bd3e1dee1987339330d699f766d6d805e7ab45e`
 
 Laravel and the official starter kits are copyright their respective owners

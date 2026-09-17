@@ -1,7 +1,17 @@
+import '@/testing/mock-passkeys';
 import { afterEach } from 'vitest';
 import { enableAutoUnmount } from '@vue/test-utils';
+import {
+    resetPasskeyRegisterMock,
+    resetPasskeyVerifyMock,
+} from '@/testing/mock-passkeys';
 
 enableAutoUnmount(afterEach);
+
+afterEach(() => {
+    resetPasskeyVerifyMock();
+    resetPasskeyRegisterMock();
+});
 
 class ResizeObserverMock {
     observe(): void {}

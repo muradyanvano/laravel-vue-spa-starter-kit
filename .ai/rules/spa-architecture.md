@@ -9,7 +9,20 @@
 - `AuthProvider` / `provideAuth()` owns `/api/v1/user` bootstrap and lives above route transitions. Pages consume `useAuth()`; call `refreshUser()` only after auth/profile mutations. Do not add Pinia, VueUse stores, request-cache libraries, or global URL deduplication maps unless there is a demonstrated need beyond one auth owner.
 - Password confirmation (HTTP 423) is handled contextually by sensitive callers, not as a global Axios navigation side effect. Do not automatically replay mutations after 419/423.
 - Two-factor secrets, QR payloads, and recovery codes are Fortify-owned and must never be logged, stored in browser storage, or included on the current-user endpoint.
-- Passkeys are a Fortify transitive dependency (`laravel/passkeys`). They are not part of this kit's default UI; leave them disabled/deferred unless explicitly requested.
+- Fortify passkeys are enabled (`Features::passkeys(['confirmPassword' => true])`). Native Fortify/laravel-passkeys endpoints own WebAuthn ceremonies (login, confirmation, registration, deletion). Do not duplicate them under `/api/v1`.
+- Passkey list metadata lives at `GET /api/v1/settings/passkeys` via `PasskeyResource` (safe fields only: `id`, `name`, `authenticator`, `created_at_diff`, `last_used_at_diff`). Never expose credentials, challenges, or `user_handle`.
+- Security settings exposes `canManagePasskeys` capability only — do not embed passkey collections on `/api/v1/settings/security`.
+- Passkeys are not part of auth/current-user state (`GET /api/v1/user`).
+- `@laravel/passkeys` owns WebAuthn HTTP/ceremonies; Axios owns ordinary SPA API/Fortify requests. Call `preparePasskeyCeremony()` (Sanctum CSRF) before starting a passkey ceremony.
+- Login owns exactly one `refreshUser()` after successful passkey login; Confirm Password performs zero current-user refresh after passkey confirmation.
+- Native Fortify passkey login authenticates directly (no custom SPA second-factor challenge after passkey login). Password login keeps Fortify's existing 2FA behavior.
+- Passkey cancellation is silent (no error, navigation, refresh, or ceremony replay). Do not auto-replay mutations after 423 confirmation. Conditional WebAuthn autofill is deferred.
+- Passkey metadata is Security-page data, not auth state. `ManagePasskeys` owns lazy `GET /api/v1/settings/passkeys` only after `canManagePasskeys` is known from security settings — never from AppLayout, auth bootstrap, or `/api/v1/user`.
+- Axios owns passkey list fetch and `DELETE /user/passkeys/{id}`; `@laravel/passkeys` owns registration ceremony only (`GET/POST /user/passkeys/options|passkeys`).
+- Registration and deletion success refresh the passkey list exactly once — never `GET /api/v1/user` or `/api/v1/settings/security`.
+- Passkey registration/deletion 423 navigates contextually to `/confirm-password` with intended `/settings/security`; do not replay mutations or persist credentials/challenges.
+- Unsupported browsers hide registration only; existing passkeys remain visible and deletable when `canManagePasskeys` is true.
+- Conditional WebAuthn autofill remains deferred.
 - Wayfinder output under `resources/js/actions`, `resources/js/routes`, and `resources/js/wayfinder` is generated (gitignored). Regenerate via the Vite plugin or `npm run wayfinder:generate` before TypeScript/build checks on a fresh checkout.
 - Prefer Vue 3 Composition API with `<script setup lang="ts">`, strict TypeScript, and small focused modules.
 - Auth form fields use a single `grid gap-2` field unit (Label, control, InputError). Do not compound parent gap with control/error top margins.

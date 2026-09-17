@@ -42,4 +42,20 @@ test('current user resource does not expose sensitive attributes', function () {
     $response->assertJsonMissingPath('data.two_factor_recovery_codes');
     expect($response->json('data'))->not->toHaveKey('password');
     expect($response->json())->not->toHaveKey('password');
+    $response->assertJsonMissingPath('data.passkeys');
+    $response->assertJsonMissingPath('data.credential');
+    $response->assertJsonMissingPath('data.credential_id');
+    $response->assertJsonMissingPath('data.user_handle');
+});
+
+test('current user resource does not expose passkeys when user has passkeys', function () {
+    $user = User::factory()->create();
+    createPasskeyFor($user);
+
+    $response = $this->actingAs($user)->getJson('/api/v1/user');
+
+    $response->assertOk();
+    $response->assertJsonMissingPath('data.passkeys');
+    $response->assertJsonMissingPath('data.credential');
+    $response->assertJsonMissingPath('data.credential_id');
 });

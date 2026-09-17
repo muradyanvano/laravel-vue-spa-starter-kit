@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DocumentTitle from '@/components/DocumentTitle.vue';
+import PasskeyVerify from '@/components/PasskeyVerify.vue';
 import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,8 @@ import { Spinner } from '@/components/ui/spinner';
 import { fieldDescribedBy, fieldErrorId, useForm } from '@/composables/useForm';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 import { confirmPassword } from '@/lib/auth-api';
-import { getSafeInternalPath, historyStateFrom } from '@/lib/navigation';
+import { PASSKEY_CONFIRM_ROUTES } from '@/lib/passkeys';
+import { getPostAuthPath, historyStateFrom } from '@/lib/navigation';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -17,7 +19,11 @@ const form = useForm({
     password: '',
 });
 
-const intended = getSafeInternalPath(historyStateFrom(), '/settings/security');
+const intended = getPostAuthPath(historyStateFrom(), '/settings/security');
+
+async function onPasskeySuccess(): Promise<void> {
+    await router.replace(intended);
+}
 
 async function onSubmit(): Promise<void> {
     try {
@@ -38,6 +44,14 @@ async function onSubmit(): Promise<void> {
         description="This is a secure area of the application. Please confirm your password before continuing."
     >
         <DocumentTitle title="Confirm password" />
+
+        <PasskeyVerify
+            :routes="PASSKEY_CONFIRM_ROUTES"
+            label="Confirm with passkey"
+            loading-label="Confirming..."
+            separator="Or confirm with password"
+            @success="onPasskeySuccess"
+        />
 
         <form novalidate @submit.prevent="onSubmit">
             <div class="space-y-6">

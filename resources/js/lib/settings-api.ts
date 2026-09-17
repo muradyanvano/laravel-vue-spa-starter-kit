@@ -4,6 +4,7 @@ import {
     isRequestAborted,
     normalizeApiError,
 } from '@/lib/http';
+import type { Passkey } from '@/types';
 
 const PROFILE_DESTROY_URL = '/settings/profile';
 const SECURITY_SETTINGS_URL = '/api/v1/settings/security';
@@ -15,9 +16,12 @@ const TWO_FACTOR_QR_CODE_URL = '/user/two-factor-qr-code';
 const TWO_FACTOR_SECRET_KEY_URL = '/user/two-factor-secret-key';
 const TWO_FACTOR_RECOVERY_CODES_URL = '/user/two-factor-recovery-codes';
 const CONFIRMED_PASSWORD_STATUS_URL = '/user/confirmed-password-status';
+const PASSKEYS_LIST_URL = '/api/v1/settings/passkeys';
+const PASSKEY_DESTROY_URL = '/user/passkeys';
 
 export type SecuritySettings = {
     canManageTwoFactor: boolean;
+    canManagePasskeys: boolean;
     twoFactorEnabled: boolean;
     requiresConfirmation: boolean;
     passwordRules: string;
@@ -33,6 +37,8 @@ export type PasswordConfirmationStatus = {
 };
 
 type MaybeWrapped<T> = T | { data: T };
+
+export type { Passkey };
 
 /** Laravel resources may wrap payloads in a `data` key; both shapes are accepted. */
 function unwrap<T>(payload: MaybeWrapped<T>): T {
@@ -149,6 +155,30 @@ export async function fetchRecoveryCodes(): Promise<string[]> {
 export async function regenerateRecoveryCodes(): Promise<void> {
     await ensureCsrfCookie();
     await http.post(TWO_FACTOR_RECOVERY_CODES_URL);
+}
+
+export async function fetchPasskeys(options?: {
+    signal?: AbortSignal;
+}): Promise<Passkey[]> {
+    try {
+        const response = await http.get<MaybeWrapped<Passkey[]>>(
+            PASSKEYS_LIST_URL,
+            { signal: options?.signal },
+        );
+
+        return unwrap(response.data);
+    } catch (error) {
+        if (isRequestAborted(error)) {
+            throw error;
+        }
+
+        throw normalizeApiError(error);
+    }
+}
+
+export async function deletePasskey(id: number): Promise<void> {
+    await ensureCsrfCookie();
+    await http.delete(`${PASSKEY_DESTROY_URL}/${id}`);
 }
 
 export async function fetchPasswordConfirmationStatus(options?: {
