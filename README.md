@@ -39,7 +39,7 @@ UI and developer experience are inspired by Laravel’s official Vue starter kit
 
 ## Quick Start
 
-### Intended Laravel Installer command (after Packagist publication)
+### Intended Laravel Installer command
 
 ```bash
 laravel new my-app --using=muradyanvano/laravel-vue-spa-starter-kit
@@ -47,9 +47,7 @@ cd my-app
 npm run dev
 ```
 
-> **Not published yet.** Until the package is registered on Packagist and a release is tagged, use the clone workflow below. After publication, prefer a version-pinned Composer install when you need an immutable release.
-
-### Version-pinned Composer install (after `v1.0.0` exists)
+### Version-pinned Composer install
 
 ```bash
 composer create-project \
@@ -222,7 +220,7 @@ This community project is independent of Laravel and is **not** an official star
 ## Links
 
 - [GitHub repository](https://github.com/muradyanvano/laravel-vue-spa-starter-kit)
-- [Packagist package](https://packagist.org/packages/muradyanvano/laravel-vue-spa-starter-kit) _(after publication)_
+- [Packagist package](https://packagist.org/packages/muradyanvano/laravel-vue-spa-starter-kit)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 - [License](LICENSE)
