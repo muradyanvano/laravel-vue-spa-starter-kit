@@ -1,9 +1,10 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { defineComponent, h, nextTick } from 'vue';
-import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
+import { defineComponent, nextTick } from 'vue';
+import { RouterView } from 'vue-router';
 import AuthProvider from '@/auth/AuthProvider.vue';
 import RegisterPage from '@/pages/auth/RegisterPage.vue';
+import { createSpaTestRouter } from '@/testing/create-test-router';
 
 vi.mock('@/lib/auth-api', () => ({
     fetchCurrentUser: vi.fn(),
@@ -21,6 +22,41 @@ import { fetchCurrentUser, register } from '@/lib/auth-api';
 
 const mockedFetchCurrentUser = vi.mocked(fetchCurrentUser);
 const mockedRegister = vi.mocked(register);
+
+async function mountRegister() {
+    const router = createSpaTestRouter({
+        children: [
+            { path: 'register', component: RegisterPage },
+            {
+                path: 'dashboard',
+                component: defineComponent({
+                    template: '<div>Dashboard ready</div>',
+                }),
+            },
+            {
+                path: 'verify-email',
+                component: defineComponent({
+                    template: '<div>Verify ready</div>',
+                }),
+            },
+        ],
+    });
+
+    await router.push('/register');
+    await router.isReady();
+
+    const wrapper = mount(
+        defineComponent({
+            components: { AuthProvider, RouterView },
+            template: '<AuthProvider><RouterView /></AuthProvider>',
+        }),
+        { global: { plugins: [router] } },
+    );
+
+    await flushPromises();
+
+    return { wrapper, router };
+}
 
 describe('RegisterPage', () => {
     beforeEach(() => {
@@ -40,45 +76,7 @@ describe('RegisterPage', () => {
                 email_verified_at: '2026-01-01T00:00:00+00:00',
             });
 
-        const router = createRouter({
-            history: createMemoryHistory(),
-            routes: [
-                {
-                    path: '/',
-                    component: defineComponent({
-                        setup: () => () => h(RouterView),
-                    }),
-                    children: [
-                        { path: 'register', component: RegisterPage },
-                        {
-                            path: 'dashboard',
-                            component: defineComponent({
-                                template: '<div>Dashboard ready</div>',
-                            }),
-                        },
-                        {
-                            path: 'verify-email',
-                            component: defineComponent({
-                                template: '<div>Verify ready</div>',
-                            }),
-                        },
-                    ],
-                },
-            ],
-        });
-
-        await router.push('/register');
-        await router.isReady();
-
-        const wrapper = mount(
-            defineComponent({
-                components: { AuthProvider, RouterView },
-                template: '<AuthProvider><RouterView /></AuthProvider>',
-            }),
-            { global: { plugins: [router] } },
-        );
-
-        await flushPromises();
+        const { wrapper, router } = await mountRegister();
 
         await wrapper.find('input#name').setValue('Jane');
         await wrapper.find('input#email').setValue('jane@example.com');
@@ -103,45 +101,7 @@ describe('RegisterPage', () => {
                 email_verified_at: null,
             });
 
-        const router = createRouter({
-            history: createMemoryHistory(),
-            routes: [
-                {
-                    path: '/',
-                    component: defineComponent({
-                        setup: () => () => h(RouterView),
-                    }),
-                    children: [
-                        { path: 'register', component: RegisterPage },
-                        {
-                            path: 'dashboard',
-                            component: defineComponent({
-                                template: '<div>Dashboard ready</div>',
-                            }),
-                        },
-                        {
-                            path: 'verify-email',
-                            component: defineComponent({
-                                template: '<div>Verify ready</div>',
-                            }),
-                        },
-                    ],
-                },
-            ],
-        });
-
-        await router.push('/register');
-        await router.isReady();
-
-        const wrapper = mount(
-            defineComponent({
-                components: { AuthProvider, RouterView },
-                template: '<AuthProvider><RouterView /></AuthProvider>',
-            }),
-            { global: { plugins: [router] } },
-        );
-
-        await flushPromises();
+        const { wrapper, router } = await mountRegister();
 
         await wrapper.find('input#name').setValue('Jane');
         await wrapper.find('input#email').setValue('jane@example.com');

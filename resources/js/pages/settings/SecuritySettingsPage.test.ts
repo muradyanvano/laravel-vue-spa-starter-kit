@@ -1,10 +1,11 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h, nextTick } from 'vue';
-import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
+import { RouterView } from 'vue-router';
 import AuthProvider from '@/auth/AuthProvider.vue';
 import { useAuth } from '@/auth/use-auth';
 import SecuritySettingsPage from '@/pages/settings/SecuritySettingsPage.vue';
+import { createSpaTestRouter } from '@/testing/create-test-router';
 import type { User } from '@/types';
 
 vi.mock('@/lib/auth-api', () => ({
@@ -73,24 +74,18 @@ const AuthReadyShell = defineComponent({
 async function mountSecurity(path = '/settings/security') {
     mockedFetchCurrentUser.mockResolvedValue(verifiedUser);
 
-    const router = createRouter({
-        history: createMemoryHistory(),
-        routes: [
+    const router = createSpaTestRouter({
+        shell: AuthReadyShell,
+        children: [
             {
-                path: '/',
-                component: AuthReadyShell,
-                children: [
-                    {
-                        path: 'settings/security',
-                        component: SecuritySettingsPage,
-                    },
-                    {
-                        path: 'confirm-password',
-                        component: defineComponent({
-                            template: '<div>Confirm password ready</div>',
-                        }),
-                    },
-                ],
+                path: 'settings/security',
+                component: SecuritySettingsPage,
+            },
+            {
+                path: 'confirm-password',
+                component: defineComponent({
+                    template: '<div>Confirm password ready</div>',
+                }),
             },
         ],
     });

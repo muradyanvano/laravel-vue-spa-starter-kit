@@ -1,11 +1,12 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { defineComponent, h } from 'vue';
-import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
+import { defineComponent } from 'vue';
+import { RouterView } from 'vue-router';
 import AuthProvider from '@/auth/AuthProvider.vue';
 import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage.vue';
 import TwoFactorChallengePage from '@/pages/auth/TwoFactorChallengePage.vue';
 import ConfirmPasswordPage from '@/pages/auth/ConfirmPasswordPage.vue';
+import { createSpaTestRouter } from '@/testing/create-test-router';
 
 vi.mock('@/lib/auth-api', () => ({
     fetchCurrentUser: vi.fn(),
@@ -43,20 +44,11 @@ describe('ForgotPasswordPage', () => {
             'We have emailed your password reset link.',
         );
 
-        const router = createRouter({
-            history: createMemoryHistory(),
-            routes: [
+        const router = createSpaTestRouter({
+            children: [
                 {
-                    path: '/',
-                    component: defineComponent({
-                        setup: () => () => h(RouterView),
-                    }),
-                    children: [
-                        {
-                            path: 'forgot-password',
-                            component: ForgotPasswordPage,
-                        },
-                    ],
+                    path: 'forgot-password',
+                    component: ForgotPasswordPage,
                 },
             ],
         });
@@ -92,20 +84,11 @@ describe('TwoFactorChallengePage', () => {
     });
 
     it('toggles between otp and recovery modes', async () => {
-        const router = createRouter({
-            history: createMemoryHistory(),
-            routes: [
+        const router = createSpaTestRouter({
+            children: [
                 {
-                    path: '/',
-                    component: defineComponent({
-                        setup: () => () => h(RouterView),
-                    }),
-                    children: [
-                        {
-                            path: 'two-factor-challenge',
-                            component: TwoFactorChallengePage,
-                        },
-                    ],
+                    path: 'two-factor-challenge',
+                    component: TwoFactorChallengePage,
                 },
             ],
         });
@@ -152,26 +135,17 @@ describe('ConfirmPasswordPage', () => {
     it('confirms password and navigates to a safe intended path', async () => {
         mockedConfirmPassword.mockResolvedValue(undefined);
 
-        const router = createRouter({
-            history: createMemoryHistory(),
-            routes: [
+        const router = createSpaTestRouter({
+            children: [
                 {
-                    path: '/',
+                    path: 'confirm-password',
+                    component: ConfirmPasswordPage,
+                },
+                {
+                    path: 'settings/security',
                     component: defineComponent({
-                        setup: () => () => h(RouterView),
+                        template: '<div>Security ready</div>',
                     }),
-                    children: [
-                        {
-                            path: 'confirm-password',
-                            component: ConfirmPasswordPage,
-                        },
-                        {
-                            path: 'settings/security',
-                            component: defineComponent({
-                                template: '<div>Security ready</div>',
-                            }),
-                        },
-                    ],
                 },
             ],
         });

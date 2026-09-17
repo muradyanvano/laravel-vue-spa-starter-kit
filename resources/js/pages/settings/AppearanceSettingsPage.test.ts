@@ -1,10 +1,11 @@
 import { mount, flushPromises } from '@vue/test-utils';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { defineComponent, h, nextTick } from 'vue';
-import { createMemoryHistory, createRouter, RouterView } from 'vue-router';
+import { RouterView } from 'vue-router';
 import AuthProvider from '@/auth/AuthProvider.vue';
 import { useAuth } from '@/auth/use-auth';
 import AppearanceSettingsPage from '@/pages/settings/AppearanceSettingsPage.vue';
+import { createSpaTestRouter } from '@/testing/create-test-router';
 import type { User } from '@/types';
 
 vi.mock('@/lib/auth-api', () => ({
@@ -44,18 +45,12 @@ async function mountAppearance() {
     document.documentElement.classList.remove('dark');
     document.cookie = 'appearance=; Max-Age=0; path=/';
 
-    const router = createRouter({
-        history: createMemoryHistory(),
-        routes: [
+    const router = createSpaTestRouter({
+        shell: AuthReadyShell,
+        children: [
             {
-                path: '/',
-                component: AuthReadyShell,
-                children: [
-                    {
-                        path: 'settings/appearance',
-                        component: AppearanceSettingsPage,
-                    },
-                ],
+                path: 'settings/appearance',
+                component: AppearanceSettingsPage,
             },
         ],
     });
