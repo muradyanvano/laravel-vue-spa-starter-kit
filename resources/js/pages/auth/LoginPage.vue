@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { fieldDescribedBy, fieldErrorId, useForm } from '@/composables/useForm';
 import AuthLayout from '@/layouts/AuthLayout.vue';
+import PasskeyVerify from '@/components/PasskeyVerify.vue';
 import { login as loginRequest } from '@/lib/auth-api';
 import {
     getPostAuthPath,
@@ -33,6 +34,18 @@ const form = useForm({
 
 const flashStatus = historyStateStatus() ?? null;
 const intended = getPostAuthPath(historyStateFrom(), '/dashboard');
+
+async function onPasskeySuccess(): Promise<void> {
+    const user = await refreshUser();
+
+    if (user && user.email_verified_at === null) {
+        await router.replace('/verify-email');
+
+        return;
+    }
+
+    await router.replace(intended);
+}
 
 async function onSubmit(): Promise<void> {
     try {
@@ -91,6 +104,8 @@ async function onSubmit(): Promise<void> {
         >
             {{ form.formError }}
         </p>
+
+        <PasskeyVerify @success="onPasskeySuccess" />
 
         <form class="flex flex-col gap-6" novalidate @submit.prevent="onSubmit">
             <div class="grid gap-6">

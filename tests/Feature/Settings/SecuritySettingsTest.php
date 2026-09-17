@@ -9,9 +9,11 @@ test('authenticated verified users can fetch security settings', function () {
         ->getJson('/api/v1/settings/security')
         ->assertOk()
         ->assertJsonPath('data.canManageTwoFactor', true)
+        ->assertJsonPath('data.canManagePasskeys', true)
         ->assertJsonPath('data.twoFactorEnabled', false)
         ->assertJsonPath('data.requiresConfirmation', true)
-        ->assertJsonStructure(['data' => ['passwordRules']]);
+        ->assertJsonStructure(['data' => ['passwordRules']])
+        ->assertJsonMissingPath('data.passkeys');
 });
 
 test('security settings report enabled two-factor status', function () {

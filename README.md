@@ -39,7 +39,7 @@ UI and developer experience are inspired by Laravel’s official Vue starter kit
 
 ## Quick Start
 
-### Intended Laravel Installer command (after Packagist publication)
+### Laravel Installer
 
 ```bash
 laravel new my-app --using=muradyanvano/laravel-vue-spa-starter-kit
@@ -47,19 +47,15 @@ cd my-app
 npm run dev
 ```
 
-> **Not published yet.** Until the package is registered on Packagist and a release is tagged, use the clone workflow below. After publication, prefer a version-pinned Composer install when you need an immutable release.
-
-### Version-pinned Composer install (after `v1.0.0` exists)
+### Composer create-project
 
 ```bash
-composer create-project \
-  muradyanvano/laravel-vue-spa-starter-kit \
-  my-app \
-  v1.0.0
-
+composer create-project muradyanvano/laravel-vue-spa-starter-kit my-app
 cd my-app
 npm run dev
 ```
+
+Pin a specific release when you need an immutable install (for example `v1.0.0` today; `v1.1.0` after that release is tagged).
 
 ### Clone / source development
 
@@ -84,21 +80,32 @@ The generated project is a normal Laravel application you own and can customize 
 ### Authentication
 
 - Login / registration / logout
+- **Passkey sign-in** (WebAuthn; requires a supported browser/platform)
 - Password reset
 - Email verification
-- Password confirmation
-- Two-factor authentication
+- Password confirmation (password or passkey)
+- Two-factor authentication (password login)
 - Recovery codes
+
+### Passkeys (v1.1.0)
+
+Passkeys ship in the upcoming **v1.1.0** release on the `develop` branch. They are not yet available from Packagist stable until that version is tagged.
+
+- Sign in with a passkey from the login page
+- Confirm sensitive actions with a passkey on the confirm-password page
+- Manage passkeys under **Settings → Security** (list, register, remove)
+- Fortify + `@laravel/passkeys` handle WebAuthn ceremonies; Sanctum session cookies remain the SPA auth model
+- Password login and password confirmation remain available alongside passkeys
+- Passkey login follows Fortify’s native behavior (no custom second-factor challenge after passkey login)
+- Conditional WebAuthn autofill is not included
 
 ### Application
 
 - Responsive sidebar shell and mobile navigation
 - Dashboard
 - Profile settings (including account deletion)
-- Security settings (password update and 2FA management)
+- Security settings (password update, 2FA, and passkey management)
 - Appearance settings (light / dark / system)
-
-Passkey UI is not included in this release (Fortify’s passkeys package may still install schema; the feature is intentionally deferred).
 
 ### Developer experience
 
@@ -133,11 +140,12 @@ Default design: Laravel and the SPA share one origin (for example `https://examp
 
 - Sanctum cookie / session authentication (not JWT)
 - CSRF protection via `/sanctum/csrf-cookie` and `X-XSRF-TOKEN`
-- No auth tokens stored in `localStorage`
+- No auth tokens or WebAuthn credentials stored in `localStorage`
 - Session regeneration on authentication events
-- Password confirmation for sensitive actions
+- Password confirmation for sensitive actions (including passkey registration and removal)
 - Email verification
 - Two-factor authentication and recovery-code handling
+- Passkey metadata API exposes safe fields only (`id`, `name`, `authenticator`, timestamps)
 
 Split-origin deployments need correct `SANCTUM_STATEFUL_DOMAINS`, session cookie domain/SameSite, CORS, and CSRF configuration. That layout is out of scope for the default kit.
 
@@ -222,7 +230,7 @@ This community project is independent of Laravel and is **not** an official star
 ## Links
 
 - [GitHub repository](https://github.com/muradyanvano/laravel-vue-spa-starter-kit)
-- [Packagist package](https://packagist.org/packages/muradyanvano/laravel-vue-spa-starter-kit) _(after publication)_
+- [Packagist package](https://packagist.org/packages/muradyanvano/laravel-vue-spa-starter-kit)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 - [License](LICENSE)

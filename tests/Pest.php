@@ -44,7 +44,24 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+use App\Models\User;
+use Illuminate\Support\Str;
+use Laravel\Passkeys\Passkey;
+
+/**
+ * Create a passkey record for feature tests.
+ *
+ * @param  array<string, mixed>  $attributes
+ */
+function createPasskeyFor(User $user, array $attributes = []): Passkey
 {
-    // ..
+    /** @var Passkey $passkey */
+    $passkey = $user->passkeys()->create(array_merge([
+        'name' => 'Chrome on Windows',
+        'credential_id' => 'test-'.Str::random(32),
+        'credential' => ['aaguid' => '08987058-cadc-4b81-b6e1-30de50dcbe96'],
+        'last_used_at' => now(),
+    ], $attributes));
+
+    return $passkey;
 }

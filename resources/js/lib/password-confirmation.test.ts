@@ -1,3 +1,4 @@
+import { PasskeyError } from '@laravel/passkeys';
 import { navigateToConfirmPasswordIfRequired } from '@/lib/password-confirmation';
 import axios, { AxiosError, type AxiosResponse } from 'axios';
 import { describe, expect, it, vi } from 'vitest';
@@ -64,6 +65,22 @@ describe('navigateToConfirmPasswordIfRequired', () => {
         expect(router.replace).toHaveBeenCalledWith({
             path: '/confirm-password',
             state: { from: '/settings/profile' },
+        });
+    });
+
+    it('returns true for passkey package password confirmation errors', () => {
+        const router = createRouterMock();
+
+        const result = navigateToConfirmPasswordIfRequired(
+            new PasskeyError('Please confirm your password before continuing.'),
+            router,
+            '/settings/security',
+        );
+
+        expect(result).toBe(true);
+        expect(router.replace).toHaveBeenCalledWith({
+            path: '/confirm-password',
+            state: { from: '/settings/security' },
         });
     });
 

@@ -5,6 +5,7 @@ import AlertError from '@/components/AlertError.vue';
 import DocumentTitle from '@/components/DocumentTitle.vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
+import ManagePasskeys from '@/components/ManagePasskeys.vue';
 import ManageTwoFactor from '@/components/ManageTwoFactor.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import { Button } from '@/components/ui/button';
@@ -307,6 +308,8 @@ async function onSubmitPassword(): Promise<void> {
                 :two-factor-enabled="settings.twoFactorEnabled"
                 @updated="loadSettings"
             />
+
+            <ManagePasskeys :can-manage-passkeys="settings.canManagePasskeys" />
         </template>
     </SettingsLayout>
 </template>

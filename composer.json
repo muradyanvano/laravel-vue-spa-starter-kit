@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "muradyanvano/laravel-vue-spa-starter-kit",
     "type": "project",
-    "description": "Laravel Vue SPA starter kit with Vue Router, Fortify and Sanctum — official-style UI without Inertia.",
+    "description": "Laravel Vue SPA starter kit with Vue Router, Fortify, Sanctum, and passkeys — official-style UI without Inertia.",
     "keywords": [
         "laravel",
         "vue",
@@ -10,6 +10,8 @@
         "spa",
         "sanctum",
         "fortify",
+        "passkeys",
+        "webauthn",
         "vue-router",
         "wayfinder",
         "typescript",

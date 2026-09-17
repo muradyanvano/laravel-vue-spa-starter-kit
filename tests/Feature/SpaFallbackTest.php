@@ -57,6 +57,24 @@ test('redirects two-factor-challenge to login without pending challenge', functi
         ->assertRedirect(route('login'));
 });
 
+test('does not swallow native passkey login options with the spa fallback', function () {
+    $this->getJson('/passkeys/login/options')
+        ->assertOk()
+        ->assertJsonStructure(['options'])
+        ->assertDontSee('id="app"', false);
+});
+
+test('does not swallow native passkey registration options with the spa fallback', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->withSession(['auth.password_confirmed_at' => time()])
+        ->getJson('/user/passkeys/options')
+        ->assertOk()
+        ->assertJsonStructure(['options'])
+        ->assertDontSee('id="app"', false);
+});
+
 test('does not swallow api routes with the spa fallback', function () {
     $response = $this->getJson('/api/v1/user');
 
