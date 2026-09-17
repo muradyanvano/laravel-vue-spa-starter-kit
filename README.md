@@ -55,7 +55,7 @@ cd my-app
 npm run dev
 ```
 
-Pin a specific release when you need an immutable install (for example `v1.0.0` today; `v1.1.0` after that release is tagged).
+Pin a specific release when you need an immutable install (for example `v1.1.0` or `v1.0.0`).
 
 ### Clone / source development
 
@@ -87,17 +87,13 @@ The generated project is a normal Laravel application you own and can customize 
 - Two-factor authentication (password login)
 - Recovery codes
 
-### Passkeys (v1.1.0)
+### Passkeys
 
-Passkeys ship in the upcoming **v1.1.0** release on the `develop` branch. They are not yet available from Packagist stable until that version is tagged.
-
-- Sign in with a passkey from the login page
+- Sign in with a passkey from the login page (requires a WebAuthn-capable browser or platform)
 - Confirm sensitive actions with a passkey on the confirm-password page
 - Manage passkeys under **Settings → Security** (list, register, remove)
-- Fortify + `@laravel/passkeys` handle WebAuthn ceremonies; Sanctum session cookies remain the SPA auth model
+- Fortify and `@laravel/passkeys` handle WebAuthn ceremonies; Sanctum session cookies remain the SPA auth model
 - Password login and password confirmation remain available alongside passkeys
-- Passkey login follows Fortify’s native behavior (no custom second-factor challenge after passkey login)
-- Conditional WebAuthn autofill is not included
 
 ### Application
 
