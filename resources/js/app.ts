@@ -1,10 +1,14 @@
-import { createInertiaApp } from '@inertiajs/vue3';
+import App from '@/App.vue';
+import { initializeTheme } from '@/composables/useAppearance';
+import { router } from '@/router';
+import { createApp } from 'vue';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+initializeTheme();
 
-void createInertiaApp({
-    title: (title) => (title ? `${title} - ${appName}` : appName),
-    progress: {
-        color: '#4B5563',
-    },
-});
+const rootElement = document.getElementById('app');
+
+if (!rootElement) {
+    throw new Error('Root element #app not found');
+}
+
+createApp(App).use(router).mount(rootElement);
